@@ -1,11 +1,8 @@
 package httpapi
 
 type MakeMoveReq struct {
-	Notation string `json:"notation"`
-}
-
-type GetPGNResp struct {
-	PGN string `json:"pgn"`
+	Notation       string `json:"notation"`
+	LastMovesCount int    `json:"last_moves_count"`
 }
 
 type SaveGameResp struct {

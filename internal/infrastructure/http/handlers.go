@@ -40,10 +40,12 @@ func (h *Handler) MakeMove() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, gin.H{
-			"turn": h.session.Turn(),
-			"pgn":  h.session.PGN(),
-		})
+		n := req.LastMovesCount
+		if n <= 0 {
+			n = 3
+		}
+
+		ctx.JSON(http.StatusOK, h.session.State(n))
 	}
 }
 
@@ -62,12 +64,10 @@ func (h *Handler) SaveGame() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, gin.H{
-			"game": SaveGameResp{
-				ID:        record.ID,
-				PGN:       record.PGN,
-				CreatedAt: record.CreatedAt.Unix(),
-			},
+		ctx.JSON(http.StatusOK, SaveGameResp{
+			ID:        record.ID,
+			PGN:       record.PGN,
+			CreatedAt: record.CreatedAt.Unix(),
 		})
 	}
 }
@@ -90,14 +90,14 @@ func (h *Handler) GetTurn() gin.HandlerFunc {
 
 func (h *Handler) LastMoves() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		n := ctx.Query("n")
-		nInt, err := strconv.Atoi(n)
+		lmc := ctx.Query("lmc")
+		n, err := strconv.Atoi(lmc)
 		if err != nil {
-			nInt = 3
+			n = 3
 		}
 
 		ctx.JSON(http.StatusOK, gin.H{
-			"last_moves": h.session.LastMoves(nInt),
+			"last_moves": h.session.LastMoves(n),
 		})
 	}
 }
@@ -120,11 +120,12 @@ func (h *Handler) IsOver() gin.HandlerFunc {
 
 func (h *Handler) State() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
-			"turn":    h.session.Turn(),
-			"outcome": h.session.Outcome(),
-			"is_over": h.session.IsOver(),
-			"pgn":     h.session.PGN(),
-		})
+		lmc := ctx.Query("lmc")
+		n, err := strconv.Atoi(lmc)
+		if err != nil {
+			n = 3
+		}
+
+		ctx.JSON(http.StatusOK, h.session.State(n))
 	}
 }
