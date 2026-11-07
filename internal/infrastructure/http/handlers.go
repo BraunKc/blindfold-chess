@@ -101,3 +101,30 @@ func (h *Handler) LastMoves() gin.HandlerFunc {
 		})
 	}
 }
+
+func (h *Handler) Outcome() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{
+			"outcome": h.session.Outcome(),
+		})
+	}
+}
+
+func (h *Handler) IsOver() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{
+			"is_over": h.session.IsOver(),
+		})
+	}
+}
+
+func (h *Handler) State() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{
+			"turn":    h.session.Turn(),
+			"outcome": h.session.Outcome(),
+			"is_over": h.session.IsOver(),
+			"pgn":     h.session.PGN(),
+		})
+	}
+}

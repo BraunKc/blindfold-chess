@@ -66,3 +66,14 @@ func (s *Session) LastMoves(n int) []string {
 
 	return lastMoves
 }
+
+func (s *Session) Outcome() string {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	return s.game.Outcome().String()
+}
+
+func (s *Session) IsOver() bool {
+	return s.Outcome() != "*"
+}

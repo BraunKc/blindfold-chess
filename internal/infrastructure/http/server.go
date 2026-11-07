@@ -40,6 +40,9 @@ func setupRoutes(r *gin.Engine, h *Handler) {
 		api.GET("/pgn", h.GetPGN())
 		api.GET("/turn", h.GetTurn())
 		api.GET("/last-moves", h.LastMoves())
+		api.GET("/outcome", h.Outcome())
+		api.GET("/is-over", h.IsOver())
+		api.GET("/state", h.State())
 	}
 }
 
