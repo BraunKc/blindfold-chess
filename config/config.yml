@@ -1,0 +1,5 @@
+http:
+  host: localhost
+  port: 8041
+db:
+  path: ./db.sqlite
