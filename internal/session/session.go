@@ -1,0 +1,44 @@
+package session
+
+import (
+	"fmt"
+	"sync"
+
+	"github.com/corentings/chess/v2"
+)
+
+type Session struct {
+	mu   sync.Mutex
+	game *chess.Game
+}
+
+func New() *Session {
+	return &Session{
+		game: chess.NewGame(),
+	}
+}
+
+func (s *Session) Move(notation string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if err := s.game.PushNotationMove(notation, chess.UCINotation{}, nil); err != nil {
+		return fmt.Errorf("invalid move %s: %w", notation, err)
+	}
+
+	return nil
+}
+
+func (s *Session) PGN() string {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	return s.game.String()
+}
+
+func (s *Session) Reset() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.game = chess.NewGame()
+}
