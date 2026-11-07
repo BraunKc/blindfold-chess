@@ -42,3 +42,27 @@ func (s *Session) Reset() {
 
 	s.game = chess.NewGame()
 }
+
+func (s *Session) Turn() string {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	return s.game.CurrentPosition().Turn().String()
+}
+
+func (s *Session) LastMoves(n int) []string {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	moves := s.game.Moves()
+	if len(moves) > n {
+		moves = moves[len(moves)-n:]
+	}
+
+	lastMoves := make([]string, len(moves))
+	for i, m := range moves {
+		lastMoves[i] = m.String()
+	}
+
+	return lastMoves
+}

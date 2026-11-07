@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/braunkc/blindfold-chess/internal/application"
 	"github.com/braunkc/blindfold-chess/internal/session"
@@ -40,7 +41,8 @@ func (h *Handler) MakeMove() gin.HandlerFunc {
 		}
 
 		ctx.JSON(http.StatusOK, gin.H{
-			"pgn": h.session.PGN(),
+			"turn": h.session.Turn(),
+			"pgn":  h.session.PGN(),
 		})
 	}
 }
@@ -74,6 +76,28 @@ func (h *Handler) GetPGN() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
 			"pgn": h.session.PGN(),
+		})
+	}
+}
+
+func (h *Handler) GetTurn() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{
+			"turn": h.session.Turn(),
+		})
+	}
+}
+
+func (h *Handler) LastMoves() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		n := ctx.Query("n")
+		nInt, err := strconv.Atoi(n)
+		if err != nil {
+			nInt = 3
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"last_moves": h.session.LastMoves(nInt),
 		})
 	}
 }

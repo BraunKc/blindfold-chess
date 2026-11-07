@@ -38,6 +38,8 @@ func setupRoutes(r *gin.Engine, h *Handler) {
 		api.POST("/reset", h.Reset())
 		api.POST("/save", h.SaveGame())
 		api.GET("/pgn", h.GetPGN())
+		api.GET("/turn", h.GetTurn())
+		api.GET("/last-moves", h.LastMoves())
 	}
 }
 
