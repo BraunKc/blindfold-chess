@@ -1,11 +1,68 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/base.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+    <title>BLINDFOLD CHESS</title>
+  </head>
+  <body>
+    <main>
+      <div class="input-wrapper">
+        <div class="move-input" id="moveInput">
+          <input
+            type="text"
+            class="move-cell"
+            data-index="0"
+            maxlength="1"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            inputmode="text"
+          />
+          <input
+            type="text"
+            class="move-cell"
+            data-index="1"
+            maxlength="1"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            inputmode="text"
+          />
+          <input
+            type="text"
+            class="move-cell"
+            data-index="2"
+            maxlength="1"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            inputmode="text"
+          />
+          <input
+            type="text"
+            class="move-cell"
+            data-index="3"
+            maxlength="1"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            inputmode="text"
+          />
+        </div>
+        <button class="move-btn" id="moveBtn">></button>
+      </div>
+      <div class="last-moves-wrapper"></div>
+    </main>
+
+    <p class="notification"></p>
+
+    <script src="/js/main.js"></script>
+  </body>
 </html>

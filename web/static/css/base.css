@@ -1,0 +1,42 @@
+:root {
+  --color-bg-primary: hsl(0, 0%, 90%);
+  --color-bg-secondary: hsl(0, 0%, 95%);
+  --color-bg-tertiary: hsl(0, 0%, 99%);
+
+  --color-text-primary: hsl(0, 0%, 5%);
+  --color-text-secondary: hsl(0, 0%, 50%);
+
+  --border-radius-low: 8px;
+  --border-radius-med: 16px;
+  --border-radius-high: 32px;
+  --border-radius-full: 999px;
+
+  --padding-low: 8px;
+  --padding-med: 16px;
+  --padding-high: 32px;
+
+  --delay-low: 0.1s;
+  --delay-med: 0.3s;
+  --delay-high: 0.5s;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  outline: none;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  width: 100vw;
+  height: 100svh;
+
+  font-family: sans-serif;
+
+  background-color: var(--color-bg-primary);
+}
+
+button {
+  cursor: pointer;
+}
