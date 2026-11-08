@@ -1,4 +1,7 @@
 :root {
+  --color-error: hsl(0, 41%, 41%);
+  --color-success: hsl(141, 41%, 41%);
+
   --color-bg-primary: hsl(0, 0%, 90%);
   --color-bg-secondary: hsl(0, 0%, 95%);
   --color-bg-tertiary: hsl(0, 0%, 99%);
@@ -18,6 +21,8 @@
   --delay-low: 0.1s;
   --delay-med: 0.3s;
   --delay-high: 0.5s;
+
+  --anim-bouncy-out: cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 
 * {

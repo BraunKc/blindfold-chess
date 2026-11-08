@@ -10,58 +10,70 @@
   <body>
     <main>
       <div class="input-wrapper">
-        <div class="move-input" id="moveInput">
-          <input
-            type="text"
-            class="move-cell"
-            data-index="0"
-            maxlength="1"
-            autocomplete="off"
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
-            inputmode="text"
-          />
-          <input
-            type="text"
-            class="move-cell"
-            data-index="1"
-            maxlength="1"
-            autocomplete="off"
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
-            inputmode="text"
-          />
-          <input
-            type="text"
-            class="move-cell"
-            data-index="2"
-            maxlength="1"
-            autocomplete="off"
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
-            inputmode="text"
-          />
-          <input
-            type="text"
-            class="move-cell"
-            data-index="3"
-            maxlength="1"
-            autocomplete="off"
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
-            inputmode="text"
-          />
+        <div class="state-wrapper">
+          <p class="notification hide" id="notification"></p>
+
+          <div class="move-input" id="moveInput">
+            <input
+              type="text"
+              class="move-cell"
+              data-index="0"
+              maxlength="1"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              inputmode="text"
+            />
+            <input
+              type="text"
+              class="move-cell"
+              data-index="1"
+              maxlength="1"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              inputmode="text"
+            />
+            <input
+              type="text"
+              class="move-cell"
+              data-index="2"
+              maxlength="1"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              inputmode="text"
+            />
+            <input
+              type="text"
+              class="move-cell"
+              data-index="3"
+              maxlength="1"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              inputmode="text"
+            />
+          </div>
+
+          <p class="turn" id="turn">ход белых</p>
+
+          <div class="last-moves">
+            <ul class="last-moves-list" id="lastMoves">
+              <li>e2e4</li>
+              <li>e2e4</li>
+              <li>e2e4</li>
+            </ul>
+          </div>
         </div>
+
         <button class="move-btn" id="moveBtn">></button>
       </div>
-      <div class="last-moves-wrapper"></div>
     </main>
-
-    <p class="notification"></p>
 
     <script src="/js/main.js"></script>
   </body>

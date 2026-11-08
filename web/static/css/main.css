@@ -13,6 +13,13 @@ main {
   color: var(--color-text-primary);
 }
 
+.state-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--padding-low);
+}
+
 .move-input {
   display: flex;
   gap: var(--padding-low);
@@ -26,6 +33,7 @@ main {
   background-color: var(--color-bg-secondary);
   border-radius: var(--border-radius-low);
   box-shadow: 0 0 10px 0 hsla(0, 0%, 0%, 10%);
+  color: var(--color-text-primary);
   font-size: 2rem;
 }
 
@@ -51,4 +59,74 @@ main {
 
 .move-btn:hover {
   background-color: var(--color-bg-tertiary);
+}
+
+.turn {
+  padding: calc(var(--padding-low) / 2) var(--padding-low);
+  border-radius: var(--border-radius-low);
+  background-color: var(--color-bg-secondary);
+  box-shadow: 0 0 10px 0 hsla(0, 0%, 0%, 10%);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  text-align: center;
+}
+
+.last-moves {
+  margin-bottom: var(--padding-high);
+}
+
+.last-moves-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--padding-low);
+  list-style: none;
+}
+
+.last-moves-list li,
+.notification {
+  padding: calc(var(--padding-low) / 2) var(--padding-low);
+  border-radius: var(--border-radius-low);
+  box-shadow: 0 0 10px 0 hsla(0, 0%, 0%, 10%);
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  text-align: center;
+}
+
+.last-moves-list li:last-child {
+  box-shadow: none;
+  background: linear-gradient(
+    var(--color-bg-secondary),
+    var(--color-bg-primary)
+  );
+}
+
+.notification {
+  top: 0;
+  left: 0;
+  width: 100%;
+  position: absolute;
+  opacity: 100;
+  visibility: visible;
+  box-sizing: border-box;
+  z-index: -1;
+  transform: translateY(calc(-100% - var(--padding-low)));
+  transition:
+    transform var(--delay-med) var(--anim-bouncy-out),
+    opacity var(--delay-med),
+    visibility var(--delay-med);
+}
+
+.notification.hide {
+  transform: translateY(0);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.notification.error {
+  color: var(--color-error);
+}
+
+.notification.success {
+  color: var(--color-success);
 }
