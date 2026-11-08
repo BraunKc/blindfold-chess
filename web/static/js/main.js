@@ -62,11 +62,16 @@ class API {
   async state() {
     return this.#request('/api/state')
   }
+
+  async isPromotion(notation) {
+    return this.#request(`/api/is-promotion?notation=${notation}`)
+  }
 }
 
 class MoveEntry {
-  constructor(api, input, cells, moveBtn, notifier) {
+  constructor(api, stateView, input, cells, moveBtn, notifier) {
     this.api = api
+    this.state = stateView
     this.input = input
     this.cells = cells
     this.moveBtn = moveBtn
@@ -99,7 +104,7 @@ class MoveEntry {
       notation += el.value.toLowerCase()
     })
 
-    return notation.length === 4 ? notation : null
+    return notation.length >= 4 ? notation : null
   }
 
   async #submitMove() {
@@ -109,8 +114,8 @@ class MoveEntry {
     try {
       const state = await this.api.move(notation)
       this.clear()
-
-      console.log(state)
+      this.cells[0].focus()
+      this.state.render(state)
     } catch (err) {
       this.notifier.showError(err.message)
     }
@@ -201,6 +206,24 @@ class MoveEntry {
   }
 }
 
+class StateView {
+  constructor(turn, lastMoves) {
+    this.turn = turn
+    this.lastMoves = lastMoves
+  }
+
+  renderTurn(turn) {
+    this.turn.innerText = turn === 'w' ? 'ход белых' : 'ход черных'
+  }
+
+  renderLastMoves(lastMoves) {}
+
+  render(state) {
+    this.renderTurn(state.turn)
+    this.renderLastMoves(state.last_moves)
+  }
+}
+
 class Notifier {
   constructor(el, duration = 4000) {
     this.el = el
@@ -237,8 +260,18 @@ const api = new API()
 const notificationEl = document.getElementById('notification')
 const notifier = new Notifier(notificationEl)
 
+const turnEl = document.getElementById('turn')
+const lastMovesEl = document.getElementById('lastMoves')
+const stateView = new StateView(turnEl, lastMovesEl)
+
 const inputEl = document.getElementById('moveInput')
 const cellsEls = document.querySelectorAll('.move-cell')
 const moveBtnEl = document.getElementById('moveBtn')
-
-const moveEntry = new MoveEntry(api, inputEl, cellsEls, moveBtnEl, notifier)
+const moveEntry = new MoveEntry(
+  api,
+  stateView,
+  inputEl,
+  cellsEls,
+  moveBtnEl,
+  notifier,
+)

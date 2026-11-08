@@ -112,3 +112,31 @@ func (s *Session) State(lmc int) State {
 		LastMoves: lastMoves,
 	}
 }
+
+func (s *Session) IsPromotion(notation string) (bool, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	move, err := chess.UCINotation.Decode(chess.UCINotation{}, s.game.CurrentPosition(), notation)
+	if err != nil {
+		return false, fmt.Errorf("invalid notation %s: %w", notation, err)
+	}
+
+	piece := s.game.CurrentPosition().Board().Piece(move.S1())
+	if piece.Type() != chess.Pawn {
+		return false, nil
+	}
+
+	if move.S2().Rank() != chess.Rank1 &&
+		move.S2().Rank() != chess.Rank8 {
+		return false, nil
+	}
+
+	for _, m := range s.game.ValidMoves() {
+		if m.S1() == move.S1() && m.S2() == move.S2() {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}

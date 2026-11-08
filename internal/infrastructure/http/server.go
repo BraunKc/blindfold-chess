@@ -43,6 +43,7 @@ func setupRoutes(r *gin.Engine, h *Handler) {
 		api.GET("/outcome", h.Outcome())
 		api.GET("/is-over", h.IsOver())
 		api.GET("/state", h.State())
+		api.GET("/is-promotion", h.IsPromotion())
 	}
 }
 

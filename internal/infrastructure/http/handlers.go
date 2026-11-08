@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -31,7 +32,7 @@ func (h *Handler) MakeMove() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req MakeMoveReq
 		if err := ctx.ShouldBindJSON(&req); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request: " + err.Error()})
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("invalid request: %s", err.Error())})
 			return
 		}
 
@@ -127,5 +128,20 @@ func (h *Handler) State() gin.HandlerFunc {
 		}
 
 		ctx.JSON(http.StatusOK, h.session.State(n))
+	}
+}
+
+func (h *Handler) IsPromotion() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		notation := ctx.Query("notation")
+		isPromotion, err := h.session.IsPromotion(notation)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"is_promotion": isPromotion,
+		})
 	}
 }
