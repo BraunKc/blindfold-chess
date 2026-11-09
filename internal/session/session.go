@@ -93,21 +93,26 @@ func (s *Session) State(lmc int) State {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	outcome := s.game.Outcome().String()
+	outcome := s.game.Outcome()
+	isOver := outcome != chess.NoOutcome
+
 	moves := s.game.Moves()
-	if len(moves) > lmc {
-		moves = moves[len(moves)-lmc:]
+
+	lastMoves := make([]string, 0, len(moves))
+	pos := chess.NewGame().Position()
+	for _, m := range moves {
+		lastMoves = append(lastMoves, chess.AlgebraicNotation{}.Encode(pos, m))
+		pos = pos.Update(m)
 	}
 
-	lastMoves := make([]string, len(moves))
-	for i, m := range moves {
-		lastMoves[i] = m.String()
+	if len(lastMoves) > lmc {
+		lastMoves = lastMoves[len(lastMoves)-lmc:]
 	}
 
 	return State{
 		Turn:      s.game.CurrentPosition().Turn().String(),
-		Outcome:   outcome,
-		IsOver:    outcome != chess.NoOutcome.String(),
+		Outcome:   outcome.String(),
+		IsOver:    isOver,
 		PGN:       s.game.String(),
 		LastMoves: lastMoves,
 	}

@@ -93,11 +93,11 @@ main {
   overflow: hidden;
   margin-bottom: var(--padding-low);
   transition:
-  max-height var(--delay-high),
-  padding var(--delay-high),
-  opacity var(--delay-high),
-  visibility var(--delay-high),
-  margin var(--delay-high);
+    max-height var(--delay-high),
+    padding var(--delay-high),
+    opacity var(--delay-high),
+    visibility var(--delay-high),
+    margin var(--delay-high);
 }
 
 .last-moves-list li.hide {
@@ -113,7 +113,7 @@ main {
   left: 0;
   width: 100%;
   position: absolute;
-  opacity: 100;
+  opacity: 1;
   visibility: visible;
   box-sizing: border-box;
   z-index: -1;
@@ -136,4 +136,69 @@ main {
 
 .notification.success {
   color: var(--color-success);
+}
+
+.modal-backdrop {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: hsla(0, 0%, 0%, 50%);
+  backdrop-filter: blur(8px);
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity var(--delay-med),
+    visibility var(--delay-med);
+}
+
+.modal-backdrop.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.modal-promotion {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  padding: var(--padding-low);
+  border-radius: var(--border-radius-low);
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+  transform-origin: center;
+  transition:
+    opacity var(--delay-med),
+    visibility var(--delay-med),
+    transform var(--delay-med) var(--anim-bouncy-out);
+}
+
+.modal-promotion.hide {
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, -50%) scale(0.7);
+}
+
+.pieces-wrapper {
+  display: none;
+  gap: var(--padding-low);
+}
+
+.modal-promotion.white .pieces-wrapper[data-color='w'] {
+  display: flex;
+}
+
+.modal-promotion.black .pieces-wrapper[data-color='b'] {
+  display: flex;
+}
+
+.piece-btn {
+  border-radius: var(--border-radius-low);
+  background-color: var(--color-bg-secondary);
+  transition: background-color var(--delay-low);
+}
+
+.piece-btn:hover {
+  background-color: var(--color-bg-tertiary);
 }
