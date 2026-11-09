@@ -1,7 +1,8 @@
 class API {
   async #request(url, options = {}) {
     const res = await fetch(url, options)
-    const data = await res.json()
+    const text = await res.text()
+    const data = text ? JSON.parse(text) : {}
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`)
 
     return data
@@ -212,15 +213,69 @@ class StateView {
     this.lastMoves = lastMoves
   }
 
+  #getActiveMoves() {
+    return [...this.lastMoves.children].filter(
+      (el) => !el.classList.contains('hide'),
+    )
+  }
+
+  #addMove(notation) {
+    const li = document.createElement('li')
+    li.innerText = notation
+    li.classList.add('hide')
+    this.lastMoves.prepend(li)
+
+    li.offsetHeight
+    li.classList.remove('hide')
+  }
+
+  #removeMove() {
+    const items = this.#getActiveMoves()
+    const lastEl = items[items.length - 1]
+    if (!lastEl) return
+
+    lastEl.classList.add('hide')
+    lastEl.addEventListener('transitionend', () => lastEl.remove(), {
+      once: true,
+    })
+  }
+
   renderTurn(turn) {
     this.turn.innerText = turn === 'w' ? 'ход белых' : 'ход черных'
   }
 
-  renderLastMoves(lastMoves) {}
+  renderLastMove(notation, count = 3) {
+    if (!notation) return
+
+    this.#addMove(notation)
+
+    const excess = this.#getActiveMoves().length - count
+    for (let i = 0; i < excess; i++) {
+      this.#removeMove()
+    }
+  }
+
+  renderLastMoves(lastMoves, count = 3) {
+    if (!lastMoves) return
+
+    lastMoves.forEach((el) => {
+      this.#addMove(el)
+    })
+
+    const excess = this.#getActiveMoves().length - count
+    for (let i = 0; i < excess; i++) {
+      this.#removeMove()
+    }
+  }
 
   render(state) {
     this.renderTurn(state.turn)
-    this.renderLastMoves(state.last_moves)
+
+    if (this.lastMoves.children.length === 0) {
+      this.renderLastMoves(state.last_moves)
+    } else {
+      this.renderLastMove(state.last_moves.at(-1))
+    }
   }
 }
 
@@ -275,3 +330,12 @@ const moveEntry = new MoveEntry(
   moveBtnEl,
   notifier,
 )
+
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const state = await api.state()
+    stateView.render(state)
+  } catch (err) {
+    notifier.showError(err.message)
+  }
+})

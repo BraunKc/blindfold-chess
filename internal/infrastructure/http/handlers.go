@@ -53,7 +53,7 @@ func (h *Handler) MakeMove() gin.HandlerFunc {
 func (h *Handler) Reset() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		h.session.Reset()
-		ctx.Status(http.StatusOK)
+		ctx.JSON(http.StatusOK, nil)
 	}
 }
 

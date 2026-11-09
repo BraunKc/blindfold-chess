@@ -3,12 +3,12 @@ main {
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
 }
 
 .input-wrapper {
   display: flex;
+  margin-top: 50svh;
   gap: var(--padding-med);
   color: var(--color-text-primary);
 }
@@ -71,14 +71,9 @@ main {
   text-align: center;
 }
 
-.last-moves {
-  margin-bottom: var(--padding-high);
-}
-
 .last-moves-list {
   display: flex;
   flex-direction: column;
-  gap: var(--padding-low);
   list-style: none;
 }
 
@@ -93,12 +88,24 @@ main {
   text-align: center;
 }
 
-.last-moves-list li:last-child {
-  box-shadow: none;
-  background: linear-gradient(
-    var(--color-bg-secondary),
-    var(--color-bg-primary)
-  );
+.last-moves-list li {
+  max-height: calc(1rem + var(--padding-low));
+  overflow: hidden;
+  margin-bottom: var(--padding-low);
+  transition:
+  max-height var(--delay-high),
+  padding var(--delay-high),
+  opacity var(--delay-high),
+  visibility var(--delay-high),
+  margin var(--delay-high);
+}
+
+.last-moves-list li.hide {
+  max-height: 0;
+  padding: 0;
+  opacity: 0;
+  visibility: hidden;
+  margin-bottom: 0;
 }
 
 .notification {
