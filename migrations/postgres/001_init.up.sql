@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS games (
+    id SERIAL PRIMARY KEY,
+    pgn TEXT NOT NULL,
+    created_at INTEGER NOT NULL
+);

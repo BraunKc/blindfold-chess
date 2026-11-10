@@ -1,10 +1,15 @@
 package session
 
 import (
+	"errors"
 	"fmt"
 	"sync"
 
 	"github.com/corentings/chess/v2"
+)
+
+var (
+	ErrInvalidMove = errors.New("invalid move")
 )
 
 type Session struct {
@@ -31,7 +36,7 @@ func (s *Session) Move(notation string) error {
 	defer s.mu.Unlock()
 
 	if err := s.game.PushNotationMove(notation, chess.UCINotation{}, nil); err != nil {
-		return fmt.Errorf("invalid move %s: %w", notation, err)
+		return fmt.Errorf("%w %s: %v", ErrInvalidMove, notation, err)
 	}
 
 	return nil
@@ -58,21 +63,28 @@ func (s *Session) Turn() string {
 	return s.game.CurrentPosition().Turn().String()
 }
 
-func (s *Session) LastMoves(n int) []string {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
+func (s *Session) lastMoves(lmc int) []string {
 	moves := s.game.Moves()
-	if len(moves) > n {
-		moves = moves[len(moves)-n:]
+
+	lastMoves := make([]string, 0, len(moves))
+	pos := chess.NewGame().Position()
+	for _, m := range moves {
+		lastMoves = append(lastMoves, chess.AlgebraicNotation{}.Encode(pos, m))
+		pos = pos.Update(m)
 	}
 
-	lastMoves := make([]string, len(moves))
-	for i, m := range moves {
-		lastMoves[i] = m.String()
+	if len(lastMoves) > lmc {
+		lastMoves = lastMoves[len(lastMoves)-lmc:]
 	}
 
 	return lastMoves
+}
+
+func (s *Session) LastMoves(lmc int) []string {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	return s.lastMoves(lmc)
 }
 
 func (s *Session) Outcome() string {
@@ -96,52 +108,39 @@ func (s *Session) State(lmc int) State {
 	outcome := s.game.Outcome()
 	isOver := outcome != chess.NoOutcome
 
-	moves := s.game.Moves()
-
-	lastMoves := make([]string, 0, len(moves))
-	pos := chess.NewGame().Position()
-	for _, m := range moves {
-		lastMoves = append(lastMoves, chess.AlgebraicNotation{}.Encode(pos, m))
-		pos = pos.Update(m)
-	}
-
-	if len(lastMoves) > lmc {
-		lastMoves = lastMoves[len(lastMoves)-lmc:]
-	}
-
 	return State{
 		Turn:      s.game.CurrentPosition().Turn().String(),
 		Outcome:   outcome.String(),
 		IsOver:    isOver,
 		PGN:       s.game.String(),
-		LastMoves: lastMoves,
+		LastMoves: s.lastMoves(lmc),
 	}
 }
 
-func (s *Session) IsPromotion(notation string) (bool, error) {
+func (s *Session) IsPromotion(notation string) bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	move, err := chess.UCINotation.Decode(chess.UCINotation{}, s.game.CurrentPosition(), notation)
 	if err != nil {
-		return false, fmt.Errorf("invalid notation %s: %w", notation, err)
+		return false
 	}
 
 	piece := s.game.CurrentPosition().Board().Piece(move.S1())
 	if piece.Type() != chess.Pawn {
-		return false, nil
+		return false
 	}
 
 	if move.S2().Rank() != chess.Rank1 &&
 		move.S2().Rank() != chess.Rank8 {
-		return false, nil
+		return false
 	}
 
 	for _, m := range s.game.ValidMoves() {
 		if m.S1() == move.S1() && m.S2() == move.S2() {
-			return true, nil
+			return true
 		}
 	}
 
-	return false, nil
+	return false
 }

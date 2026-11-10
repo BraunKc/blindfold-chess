@@ -2,13 +2,8 @@ package application
 
 import (
 	"context"
-	"errors"
 
 	"github.com/braunkc/blindfold-chess/internal/domain"
-)
-
-var (
-	ErrNotFound = errors.New("game not found")
 )
 
 type GameRepository interface {
@@ -33,15 +28,7 @@ func (gs *GameService) SaveGame(ctx context.Context, pgn string) (*domain.Record
 }
 
 func (gs *GameService) GetGameByID(ctx context.Context, id int64) (*domain.Record, error) {
-	rec, err := gs.gameRepo.GetByID(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	if rec == nil {
-		return nil, ErrNotFound
-	}
-
-	return rec, nil
+	return gs.gameRepo.GetByID(ctx, id)
 }
 
 func (gs *GameService) ListGames(ctx context.Context) ([]domain.Record, error) {

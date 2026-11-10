@@ -53,7 +53,7 @@ func (s *Server) Start() error {
 			return nil
 		}
 
-		return fmt.Errorf("failed to start server: %w", err)
+		return fmt.Errorf("start server: %w", err)
 	}
 
 	return nil

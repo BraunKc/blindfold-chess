@@ -1,5 +1,22 @@
 http:
-  host: 0.0.0.0
-  port: 8041
+  host: ${HTTP_HOST}
+  port: ${HTTP_PORT}
+
 db:
-  path: ./db.sqlite
+  driver: sqlite # sqlite | postgres
+
+  sqlite:
+    path: ./db.sqlite
+    migrations-path: migrations/sqlite
+
+  postgres:
+    host: ${DB_POSTGRES_HOST}
+    port: ${DB_POSTGRES_PORT}
+    user: ${DB_POSTGRES_USER}
+    password: ${DB_POSTGRES_PASSWORD}
+    db: ${DB_POSTGRES_DB}
+    migrations-path: migrations/postgres
+
+    max-open-conns: 25
+    max-idle-conns: 5
+    conn-max-lifetime: 1h # duration

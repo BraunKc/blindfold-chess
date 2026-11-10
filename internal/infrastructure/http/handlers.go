@@ -1,11 +1,13 @@
 package httpapi
 
 import (
-	"fmt"
+	"errors"
+	"log/slog"
 	"net/http"
 	"strconv"
 
 	"github.com/braunkc/blindfold-chess/internal/application"
+	"github.com/braunkc/blindfold-chess/internal/domain"
 	"github.com/braunkc/blindfold-chess/internal/session"
 	"github.com/gin-gonic/gin"
 )
@@ -32,12 +34,12 @@ func (h *Handler) MakeMove() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req MakeMoveReq
 		if err := ctx.ShouldBindJSON(&req); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("invalid request: %s", err.Error())})
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 			return
 		}
 
 		if err := h.session.Move(req.Notation); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			handleError(ctx, err)
 			return
 		}
 
@@ -53,7 +55,7 @@ func (h *Handler) MakeMove() gin.HandlerFunc {
 func (h *Handler) Reset() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		h.session.Reset()
-		ctx.JSON(http.StatusOK, nil)
+		ctx.JSON(http.StatusOK, h.session.State(0))
 	}
 }
 
@@ -61,7 +63,7 @@ func (h *Handler) SaveGame() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		record, err := h.service.SaveGame(ctx.Request.Context(), h.session.PGN())
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save game"})
+			handleError(ctx, err)
 			return
 		}
 
@@ -91,14 +93,8 @@ func (h *Handler) GetTurn() gin.HandlerFunc {
 
 func (h *Handler) LastMoves() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		lmc := ctx.Query("lmc")
-		n, err := strconv.Atoi(lmc)
-		if err != nil {
-			n = 3
-		}
-
 		ctx.JSON(http.StatusOK, gin.H{
-			"last_moves": h.session.LastMoves(n),
+			"last_moves": h.session.LastMoves(parseLMC(ctx, 3)),
 		})
 	}
 }
@@ -121,27 +117,33 @@ func (h *Handler) IsOver() gin.HandlerFunc {
 
 func (h *Handler) State() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		lmc := ctx.Query("lmc")
-		n, err := strconv.Atoi(lmc)
-		if err != nil {
-			n = 3
-		}
-
-		ctx.JSON(http.StatusOK, h.session.State(n))
+		ctx.JSON(http.StatusOK, h.session.State(parseLMC(ctx, 3)))
 	}
 }
 
 func (h *Handler) IsPromotion() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		notation := ctx.Query("notation")
-		isPromotion, err := h.session.IsPromotion(notation)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
+		ctx.JSON(http.StatusOK, gin.H{"is_promotion": h.session.IsPromotion(ctx.Query("notation"))})
+	}
+}
 
-		ctx.JSON(http.StatusOK, gin.H{
-			"is_promotion": isPromotion,
-		})
+func parseLMC(ctx *gin.Context, def int) int {
+	n, err := strconv.Atoi(ctx.Query("lmc"))
+	if err != nil || n <= 0 || n > 100 {
+		n = def
+	}
+
+	return n
+}
+
+func handleError(ctx *gin.Context, err error) {
+	switch {
+	case errors.Is(err, domain.ErrNotFound):
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+	case errors.Is(err, session.ErrInvalidMove):
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid move"})
+	default:
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+		slog.Error("internal error", slog.Any("err", err))
 	}
 }

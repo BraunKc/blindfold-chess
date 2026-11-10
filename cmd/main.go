@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"log/slog"
 	"os"
 
 	"github.com/braunkc/blindfold-chess/internal/application"
@@ -10,12 +11,15 @@ import (
 	httpapi "github.com/braunkc/blindfold-chess/internal/infrastructure/http"
 	"github.com/braunkc/blindfold-chess/internal/infrastructure/persistence/game"
 	"github.com/braunkc/blindfold-chess/internal/session"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	cfg, err := config.Setup("config/config.yml")
+	godotenv.Load(".env")
+
+	cfg, err := config.New("config/config.yml")
 	if err != nil {
-		log.Println("failed to setup config:", err)
+		slog.Error("create config", slog.Any("err", err))
 		os.Exit(1)
 	}
 
@@ -23,10 +27,16 @@ func main() {
 
 	db, err := infrastructure.Setup(cfg.DB)
 	if err != nil {
-		log.Println("failed to setup db:", err)
+		slog.Error("setup db", slog.Any("err", err))
 		os.Exit(1)
 	}
-	gameRepo := game.New(db)
+
+	if err = infrastructure.Migrate(&cfg.DB); err != nil {
+		slog.Error("migrate", slog.Any("err", err))
+		os.Exit(1)
+	}
+
+	gameRepo := game.New(db, cfg.DB)
 	service := application.New(gameRepo)
 
 	handler := httpapi.NewHandler(session, service)
