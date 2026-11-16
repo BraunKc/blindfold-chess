@@ -10,6 +10,7 @@ class Game {
     if (!notation) return
 
     try {
+      // СДЕЛАТЬ ОКОНЧАНИЕ ПАРТИИ
       const res = await this.api.isPromotion(notation)
       if (res.is_promotion) {
         const piece = await this.promotionModal.open(this.state.turn ?? 'w')
@@ -87,6 +88,14 @@ class MoveEntry {
     cell.value = value.toLowerCase()
   }
 
+  async #submit(notation) {
+    const ok = await this.game.move(notation)
+    if (ok) {
+      this.clear()
+      this.cells[0].focus()
+    }
+  }
+
   async #onEnter(e) {
     e.preventDefault()
 
@@ -101,11 +110,7 @@ class MoveEntry {
       return
     }
 
-    const ok = await this.game.move(notation)
-    if (ok) {
-      this.clear()
-      this.cells[0].focus()
-    }
+    await this.#submit(notation)
   }
 
   #onBackspace(e) {
@@ -162,7 +167,7 @@ class MoveEntry {
     this.input.addEventListener('keydown', (e) => this.#onKeydown(e))
 
     this.moveBtn.addEventListener('click', () =>
-      this.game.move(this.#getNotation()),
+      this.#submit(this.#getNotation()),
     )
   }
 }
